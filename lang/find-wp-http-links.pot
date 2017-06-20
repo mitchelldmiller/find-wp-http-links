@@ -1,0 +1,320 @@
+"Project-Id-Version: Find WordPress HTTP Links v1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2017-06-19 22:32:29+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n>1;\n"
+"X-Generator: CSL v1.x\n"
+"X-Poedit-Language: \n"
+"X-Poedit-Country: \n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;\n"
+"X-Poedit-Basepath: ../\n"
+"X-Poedit-Bookmarks: \n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Textdomain-Support: yes"
+
+#. translators: plugin header field 'Name'
+#: find-wp-http-links.php:0
+#@ find-wp-http-links
+msgid "Find WordPress HTTP Links"
+msgstr ""
+
+#. translators: plugin header field 'Description'
+#: find-wp-http-links.php:0
+#@ find-wp-http-links
+msgid "Find http links on https site."
+msgstr ""
+
+#. translators: plugin header field 'Author'
+#: find-wp-http-links.php:0
+#@ find-wp-http-links
+msgid "Mitchell D. Miller"
+msgstr ""
+
+#. translators: plugin header field 'Version'
+#: find-wp-http-links.php:0
+#@ find-wp-http-links
+msgid "1.0.0"
+msgstr ""
+
+#: find-wp-http-links.php:91
+#@ find-wp-http-links
+msgid "Requires https"
+msgstr ""
+
+#: find-wp-http-links.php:102
+#@ find-wp-http-links
+msgid "Find Http Links"
+msgstr ""
+
+#: find-wp-http-links.php:467
+#@ find-wp-http-links
+msgid "No widgets with text found."
+msgstr ""
+
+#: find-wp-http-links.php:471
+#, php-format
+#@ find-wp-http-links
+msgid "Checked %s widget"
+msgid_plural "Checked %s widgets"
+msgstr[0] ""
+msgstr[1] ""
+
+#: find-wp-http-links.php:476
+#@ find-wp-http-links
+msgid "Including"
+msgstr ""
+
+#: find-wp-http-links.php:478
+#: find-wp-http-links.php:797
+#@ find-wp-http-links
+msgid "See"
+msgstr ""
+
+#: find-wp-http-links.php:483
+#@ find-wp-http-links
+msgid "No http links on widgets"
+msgstr ""
+
+#: find-wp-http-links.php:547
+#@ find-wp-http-links
+msgid "Find HTTP Links on HTTPS Site"
+msgstr ""
+
+#: find-wp-http-links.php:612
+#@ find-wp-http-links
+msgid "About"
+msgstr ""
+
+#: find-wp-http-links.php:789
+#@ find-wp-http-links
+msgid "Checked"
+msgstr ""
+
+#: find-wp-http-links.php:789
+#@ find-wp-http-links
+msgid "options"
+msgstr ""
+
+#: find-wp-http-links.php:798
+#@ find-wp-http-links
+msgid "Check options"
+msgstr ""
+
+#: find-wp-http-links.php:1087
+#@ find-wp-http-links
+msgid "Page"
+msgstr ""
+
+#: find-wp-http-links.php:1088
+#@ find-wp-http-links
+msgid "META"
+msgstr ""
+
+#: find-wp-http-links.php:1120
+#@ find-wp-http-links
+msgid "Support"
+msgstr ""
+
+#: find-wp-http-links.php:1153
+#@ find-wp-http-links
+msgid "Invalid options."
+msgstr ""
+
+#: find-wp-http-links.php:1154
+#@ find-wp-http-links
+msgid "Invalid widgets."
+msgstr ""
+
+#: find-wp-http-links.php:1155
+#@ find-wp-http-links
+msgid "Invalid posts."
+msgstr ""
+
+#. translators: plugin header field 'PluginURI'
+#: find-wp-http-links.php:0
+#@ find-wp-http-links
+msgid "https://wheredidmybraingo.com/find-wordpress-http-links/"
+msgstr ""
+
+#. translators: plugin header field 'AuthorURI'
+#: find-wp-http-links.php:0
+#@ find-wp-http-links
+msgid "https://wheredidmybraingo.com/about/"
+msgstr ""
+
+#: find-wp-http-links.php:91
+#@ find-wp-http-links
+msgid "This site"
+msgstr ""
+
+#: find-wp-http-links.php:388
+#@ find-wp-http-links
+msgid "No http links in custom posts"
+msgstr ""
+
+#: find-wp-http-links.php:390
+#, php-format
+#@ find-wp-http-links
+msgid "%s published custom post with http link"
+msgid_plural "%s published custom posts with http link"
+msgstr[0] ""
+msgstr[1] ""
+
+#: find-wp-http-links.php:393
+#@ find-wp-http-links
+msgid "Fix Custom Posts"
+msgstr ""
+
+#: find-wp-http-links.php:412
+#@ find-wp-http-links
+msgid "Error updating custom posts"
+msgstr ""
+
+#: find-wp-http-links.php:474
+#, php-format
+#@ find-wp-http-links
+msgid "%s widget with http link"
+msgid_plural "%s widgets with http links"
+msgstr[0] ""
+msgstr[1] ""
+
+#: find-wp-http-links.php:549
+#@ find-wp-http-links
+msgid "FAKE MODE"
+msgstr ""
+
+#: find-wp-http-links.php:550
+#@ find-wp-http-links
+msgid "Searching for"
+msgstr ""
+
+#: find-wp-http-links.php:551
+#@ find-wp-http-links
+msgid "Reloading. Please wait."
+msgstr ""
+
+#: find-wp-http-links.php:554
+#@ find-wp-http-links
+msgid "Working"
+msgstr ""
+
+#: find-wp-http-links.php:591
+#@ find-wp-http-links
+msgid "Analysis"
+msgstr ""
+
+#: find-wp-http-links.php:654
+#@ find-wp-http-links
+msgid "No http links in published posts or pages"
+msgstr ""
+
+#: find-wp-http-links.php:656
+#, php-format
+#@ default
+msgid "%s published documents with http link"
+msgid_plural "%s published documents with http links"
+msgstr[0] ""
+msgstr[1] ""
+
+#: find-wp-http-links.php:657
+#@ find-wp-http-links
+msgid "Replace Published Content"
+msgstr ""
+
+#: find-wp-http-links.php:693
+#, php-format
+#@ find-wp-http-links
+msgid "Error replacing text on %s published document"
+msgid_plural "Error replacing text on %s published document"
+msgstr[0] ""
+msgstr[1] ""
+
+#: find-wp-http-links.php:794
+#@ find-wp-http-links
+msgid "No options with http links"
+msgstr ""
+
+#: find-wp-http-links.php:800
+#, php-format
+#@ find-wp-http-links
+msgid "%s option with http link"
+msgid_plural "%s options with http links"
+msgstr[0] ""
+msgstr[1] ""
+
+#: find-wp-http-links.php:803
+#@ find-wp-http-links
+msgid "options with http links"
+msgstr ""
+
+#: find-wp-http-links.php:816
+#@ find-wp-http-links
+msgid "No http links in published postmeta"
+msgstr ""
+
+#: find-wp-http-links.php:818
+#, php-format
+#@ default
+msgid "%s published document with http postmeta link"
+msgid_plural "%s published documents with http postmeta links"
+msgstr[0] ""
+msgstr[1] ""
+
+#: find-wp-http-links.php:819
+#@ find-wp-http-links
+msgid "Fix Published Meta"
+msgstr ""
+
+#: find-wp-http-links.php:832
+#@ find-wp-http-links
+msgid "No http links in other postmeta"
+msgstr ""
+
+#: find-wp-http-links.php:834
+#, php-format
+#@ find-wp-http-links
+msgid "%s other postmeta value with http link"
+msgid_plural "%s other postmeta values with http links"
+msgstr[0] ""
+msgstr[1] ""
+
+#: find-wp-http-links.php:836
+#@ find-wp-http-links
+msgid "Fix Unpublished Meta"
+msgstr ""
+
+#: find-wp-http-links.php:854
+#@ find-wp-http-links
+msgid "Error updating document"
+msgstr ""
+
+#: find-wp-http-links.php:1076
+#@ find-wp-http-links
+msgid "Congratulations! No http links found in content of published posts and pages."
+msgstr ""
+
+#: find-wp-http-links.php:1101
+#@ find-wp-http-links
+msgid "Fix Content"
+msgstr ""
+
+#: find-wp-http-links.php:1151
+#@ find-wp-http-links
+msgid "Documents with http links in content."
+msgstr ""
+
+#: find-wp-http-links.php:1152
+#@ find-wp-http-links
+msgid "Invalid other postmeta links."
+msgstr ""
+
+#: find-wp-http-links.php:1156
+#@ find-wp-http-links
+msgid "Invalid published postmeta links."
+msgstr ""
