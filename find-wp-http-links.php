@@ -2,7 +2,7 @@
 /**
  Plugin Name:  Find WordPress HTTP Links
  Description:  Find http links on https site.
- Version:      1.0.0
+ Version:      1.0.1
  Author:       Mitchell D. Miller
  Author URI:   https://wheredidmybraingo.com/about/
  Plugin URI:   https://wheredidmybraingo.com/find-wordpress-http-links/
@@ -550,7 +550,7 @@ Class Find_WP_Http_Links {
 	if (!$is_https) {
 		$pleft = __( 'FAKE MODE', 'find-wp-http-links' );
 		$pmid = __( 'Searching for', 'find-wp-http-links' );
-		echo sprintf('<h3><span class="wp-ui-text-highlight" style="padding-right:3em;">%s</span> %s %s</h3>',
+		echo sprintf('<h3><span class="wp-ui-text-highlight" style="padding-right:2em;">%s</span> %s %s</h3>',
 		$pleft, $pmid, $http);
 	}
 	echo "<p style='display:none;'><span id='fwh_working'>{$pworking}</span><span id='fwh_loading'>{$preload}</span><span id='fwh_url'>{$site_url}</span><span id='fwh_http'>{$http}</span></p>";
