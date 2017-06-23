@@ -545,13 +545,13 @@ Class Find_WP_Http_Links {
 	<div class="wrap">
 <?php	
 	echo sprintf( '<h2>%s</h2>', __( 'Find HTTP Links on HTTPS Site', 'find-wp-http-links' ) );
+	$preload = __( 'Reloading. Please wait.', 'find-wp-http-links' );
+	$pworking = __( 'Working', 'find-wp-http-links' );
 	if (!$is_https) {
 		$pleft = __( 'FAKE MODE', 'find-wp-http-links' );
 		$pmid = __( 'Searching for', 'find-wp-http-links' );
-		$preload = __( 'Reloading. Please wait.', 'find-wp-http-links' );
 		echo sprintf('<h3><span class="wp-ui-text-highlight" style="padding-right:3em;">%s</span> %s %s</h3>',
 		$pleft, $pmid, $http);
-		$pworking = __( 'Working', 'find-wp-http-links' );
 	}
 	echo "<p style='display:none;'><span id='fwh_working'>{$pworking}</span><span id='fwh_loading'>{$preload}</span><span id='fwh_url'>{$site_url}</span><span id='fwh_http'>{$http}</span></p>";
 ?>
