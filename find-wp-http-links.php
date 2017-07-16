@@ -611,7 +611,7 @@ Class Find_WP_Http_Links {
 						<div class="postbox">
 							<h2 style="border-bottom: 1px solid black; text-align: center;"><?php _e('About', 'find-wp-http-links' ); ?></h2>
 							<div class="inside">
-							<p>See <a target="_blank" style="text-decoration: underline;"  href="https://wheredidmybraingo.com/how-to-find-http-wordpress-links-on-https-sites/">How to Find http WordPress Links on https Sites</a></p>
+							<p>See <a target="_blank" style="text-decoration: underline;"  href="https://wheredidmybraingo.com/find-wordpress-http-links/">How to Find http WordPress Links on https Sites</a></p>
 								<p>Copyright &copy; 2017 <a href="https://wheredidmybraingo.com/tampa-wordpress-developer/">Mitchell D. Miller</a></p>
 							</div>
 						</div> <!-- .postbox -->
