@@ -49,11 +49,16 @@ Includes _FAKE MODE_ to check copy of production database running on development
 1. Analysis, results. 
 
 == Changelog ==
+= 1.0.2 =
+* fixed wpdb::prepare error.
 
 = 1.0.0 =
 * initial version.
 
 == Upgrade Notice ==
+
+= 1.0.2 =
+* Upgrade recommended.
 
 = 1.0.0 =
 * initial version.

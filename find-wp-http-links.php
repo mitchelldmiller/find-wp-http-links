@@ -2,7 +2,7 @@
 /**
  Plugin Name:  Find WordPress HTTP Links
  Description:  Find http links on https site.
- Version:      1.0.1
+ Version:      1.0.2
  Author:       Mitchell D. Miller
  Author URI:   https://wheredidmybraingo.com/about/
  Plugin URI:   https://wheredidmybraingo.com/find-wordpress-http-links/
@@ -14,9 +14,9 @@
 
 /**
  * Find http links on an https WordPress site.
- * 
+ *
  * Finds mixed content in posts, pages, postmeta, options. Displays report with links to edit items. Replaces content on selected posts.
- * 
+ *
  * Includes 5 Javascript functions <script>
  * done fwhl_replace_custom / fwhl_replace_custom_javascript = replace custom post content.
  * done fwhl_replace_links / fwhl_replace_text_javascript = replace links on a single post.
@@ -25,19 +25,19 @@
  * fwhl_replace_meta_js / fwhl_replace_published_meta_javascript = replace published postmeta.
  */
 Class Find_WP_Http_Links {
-	
+
 	/**
 	 * Default number of links displayed on a page.
 	 * @var integer
 	 */
 	const DEFAULT_LINKS_PER_PAGE = 20;
-	
+
 	/**
 	 * Are we running on a test site? This is a replacement search target.
 	 * @var string address of real site
 	 */
 	public $fake_http;
-	
+
 	/**
 	 * Test for https. Add menu, plugin support link.
 	 * @since 1.0.0
@@ -53,15 +53,15 @@ Class Find_WP_Http_Links {
 		add_action( 'admin_footer', array($this, 'fwhl_replace_text_javascript') );
 		add_action( 'admin_footer', array($this, 'fwhl_replace_published_meta_javascript') );
 		add_action( 'admin_footer', array($this, 'fwhl_replace_unpublished_meta_javascript') );
-		add_action( 'admin_footer', array($this, 'fwhl_replace_custom_javascript') );	
+		add_action( 'admin_footer', array($this, 'fwhl_replace_custom_javascript') );
 		add_action( 'admin_footer', array($this, 'fwhl_replace_published_content_script') );
 		add_action( 'plugins_loaded', array($this, 'init_fwhl_translation') );
 		add_filter( 'plugin_row_meta', array($this, 'fwhl_plugin_links'), 10, 2 );
 	} // end constructor
-	
+
 	/**
 	 * get the database value for home.
-	 * 
+	 *
 	 * @return string|NULL
 	 */
 	public static function get_db_home() {
@@ -70,7 +70,7 @@ Class Find_WP_Http_Links {
 		$sql = $wpdb->prepare($query, 'home');
 		return untrailingslashit( $wpdb->get_var( $sql ) );
 	}
-	
+
 	/**
 	 * if site does not use https, do not install plugin, display message, exit.
 	 * @since 1.0.0
@@ -81,10 +81,10 @@ Class Find_WP_Http_Links {
 		$url = get_bloginfo( 'url' ); // get_option( 'home' );
 		$url = untrailingslashit($url);
 		$is_https = stristr( $url, 'https://' );
-		if ( !$is_https && !empty($db_home) && $db_home != $url ) { 
+		if ( !$is_https && !empty($db_home) && $db_home != $url ) {
 			$is_https = stristr( $db_home, 'https://' ); // fake_https
 		} // end if testing db home
-		
+
 		if ( !$is_https ) {
 			deactivate_plugins( basename( __FILE__ ) );
 			$url = get_bloginfo( 'url' );
@@ -93,7 +93,7 @@ Class Find_WP_Http_Links {
 			exit;
 		}
 	} // end is_using_https
-	
+
 	/**
 	 * add http links to tools menu.
 	 * @since 1.0.0
@@ -104,7 +104,7 @@ Class Find_WP_Http_Links {
 		apply_filters( 'whl_user_capability', 'edit_published_posts' ),
 		'wp-http-links-results', array($this, 'get_content') );
 	} // end init_fwhl_menu
-	
+
 	/**
 	 * Check options for http links.
 	 * @param string $http http version of blog url
@@ -116,22 +116,22 @@ Class Find_WP_Http_Links {
 		$retval = array('total' => 0, 'title' => '', 'invalid' => 0);
 		$like_http = '%' . $wpdb->esc_like( $http ) . '%';
 		$not_like_widget = '%' . $wpdb->esc_like( 'widget' ) . '%';
-		$template = "select COUNT(`option_value`) as `q` from $wpdb->options where 
+		$template = "select COUNT(`option_value`) as `q` from $wpdb->options where
 		`option_name` not like %s and option_value like %s";
 		$sql = $wpdb->prepare($template, $not_like_widget, $like_http);
 		$retval['invalid'] = intval( $wpdb->get_var( $sql ) );
 		if ($retval['invalid'] > 0) {
 			$template = "select `option_name` from $wpdb->options
 			where `option_name` not like %s and option_value like %s limit 0, 1";
-			$sql = $wpdb->prepare($template, $not_like_widget, $like_http);		
+			$sql = $wpdb->prepare($template, $not_like_widget, $like_http);
 			$retval['title'] = $wpdb->get_var( $sql );
 		}
-	
+
 		$sql = "select COUNT(`option_value`) as `q` from $wpdb->options";
 		$retval['total'] = intval( $wpdb->get_var( $sql ) );
 		return $retval;
 	} // end check_options
-	
+
 	/**
 	 * check video widgets for http links.
 	 * @param string $http http version of blog url
@@ -149,16 +149,16 @@ Class Find_WP_Http_Links {
 		if ( 0 == $retval['total'] ) {
 			return $retval;
 		} // end if no image widgets
-	
+
 		$like = '%' . $wpdb->esc_like( $http ) . '%';
-		$template = "select `option_value` from $wpdb->options where `option_name` = %s and option_value like '%{$http}%'";
-		$sql = $wpdb->prepare($template, 'widget_media_video', $like);		
+		$template = "select `option_value` from $wpdb->options where `option_name` = %s and option_value like %s";
+		$sql = $wpdb->prepare($template, 'widget_media_video', $like);
 		$data = $wpdb->get_var( $sql );
 		$widgets = unserialize( $data );
 		if (empty( $data ) || empty( $widgets )) {
 			return $retval;
 		}
-		
+
 		$keys = array_keys( $widgets );
 		$title = '';
 		foreach ( $keys as $q ) {
@@ -179,7 +179,7 @@ Class Find_WP_Http_Links {
 		} // end foreach
 		return $retval;
 	} // end check_video_widgets
-	
+
 	/**
 	 * check image widgets for http links.
 	 * @param string $http http version of blog url
@@ -197,12 +197,12 @@ Class Find_WP_Http_Links {
 		if (0 == $retval['total']) {
 			return $retval;
 		} // end if no image widgets
-	
+
 		$like = '%' . $wpdb->esc_like( $http ) . '%';
-		$old_sql = "select `option_value` from $wpdb->options where `option_name` = 'widget_media_image' 
+		$old_sql = "select `option_value` from $wpdb->options where `option_name` = 'widget_media_image'
 		and option_value like '%{$http}%'";
 		$template = "select `option_value` from $wpdb->options where `option_name` = %s and option_value like %s";
-		$sql = $wpdb->prepare($template, 'widget_media_image', $like);		
+		$sql = $wpdb->prepare($template, 'widget_media_image', $like);
 		$data = $wpdb->get_var( $sql );
 		$widgets = unserialize( $data );
 		if (empty( $data ) || empty( $widgets )) {
@@ -225,7 +225,7 @@ Class Find_WP_Http_Links {
 		} // end foreach
 		return $retval;
 	} // end check_image_widgets
-	
+
 	/**
 	 * check rss widgets for http links
 	 * @param string $http http version of blog url
@@ -258,7 +258,7 @@ Class Find_WP_Http_Links {
 		} // end outer foreach
 		return $retval;
 	} // end check_rss_widgets
-	
+
 	/**
 	 * check rss, image, video widgets
 	 * @param string $http http version of blog url
@@ -282,7 +282,7 @@ Class Find_WP_Http_Links {
 		$invalid = $images['invalid'] + $videos['invalid'] + $rss['invalid'];
 		return array('total' => $total, 'title' => $title, 'invalid' => $invalid);
 	} // end check_special_widgets
-	
+
 	/**
 	 * check widgets for http links.
 	 * @param string $http http version of blog url
@@ -291,7 +291,7 @@ Class Find_WP_Http_Links {
 	 */
 	public function check_all_widgets( $http ) {
 		global $wpdb;
-		$retval = $this->check_special_widgets( $http ); 
+		$retval = $this->check_special_widgets( $http );
 		// array('total' => 0, 'title' => '', 'invalid' => 0);
 		// get total here
 		$like_widget = '%' . $wpdb->esc_like( 'widget' ) . '%';
@@ -304,10 +304,10 @@ Class Find_WP_Http_Links {
 		if (0 == $retval['total']) {
 			return $retval;
 		} // end if no widgets
-	
-		$old_sql = "select option_value from {$wpdb->prefix}options where option_name = 
+
+		$old_sql = "select option_value from {$wpdb->prefix}options where option_name =
 		'widget_text' and option_value like '%{$http}%'";
-		
+
 		$like = '%' . $wpdb->esc_like( $http ) . '%';
 		$template = "select `option_value` from {$wpdb->prefix}options where `option_name` = %s and option_value like %s";
 		$sql = $wpdb->prepare($template, 'widget_text', $like);
@@ -329,7 +329,7 @@ Class Find_WP_Http_Links {
 		} // end for each
 		return $retval;
 	} // end check_all_widgets
-	
+
 	/**
 	 * check posts for http links.
 	 * @param string $http http:// link
@@ -347,8 +347,8 @@ Class Find_WP_Http_Links {
 			$msql = substr($msql, 0, -1) . ')';
 		} // end if
 		$retval = array();
-		$sql = "select ID, post_title from $wpdb->posts where 
-		post_status = 'publish' and post_content like '%{$http}%' and (post_type = 'post' 
+		$sql = "select ID, post_title from $wpdb->posts where
+		post_status = 'publish' and post_content like '%{$http}%' and (post_type = 'post'
 		or post_type = 'page') {$msql} order by post_title";
 		$posts = $wpdb->get_results($sql, ARRAY_A);
 		$j = count($posts);
@@ -357,7 +357,7 @@ Class Find_WP_Http_Links {
 		}
 		return $retval;
 	} // end check_posts
-	
+
 	/**
 	 * check custom posts for http links.
 	 * @param string $http http:// link
@@ -375,7 +375,7 @@ Class Find_WP_Http_Links {
 		}
 		return $retval;
 	} // end check_custom
-	
+
 	/*
 	 * display custom post results
 	 * @param array $docs IDs of custom posts with http links
@@ -387,21 +387,21 @@ Class Find_WP_Http_Links {
 		if ($j == 0) {
 			$num = __( 'No http links in custom posts', 'find-wp-http-links' ) . '.';
 		} else {
-			$num = sprintf( _n('%s published custom post with http link', 
-					'%s published custom posts with http link', 
+			$num = sprintf( _n('%s published custom post with http link',
+					'%s published custom posts with http link',
 					$j, 'find-wp-http-links' ), $j ) . '.';
 			$num .= sprintf(' <a class="wp-ui-text-primary" onclick="fwhl_replace_custom()" href="javascript:;">%s</a></span>', __( 'Fix Custom Posts', 'find-wp-http-links' ));
 		}
 		echo "<p class='{$color}'>{$num}</p>";
 	} // end show_custom
-	
+
 	/**
 	 * replace text on custom post content. ignores posts and pages.
 	 */
 	public function fwhl_replace_custom() {
 		global $wpdb;
 		$from = esc_url_raw($_POST['from']);
-		$to = esc_url_raw($_POST['to']);		
+		$to = esc_url_raw($_POST['to']);
 		check_ajax_referer( 'fwhl_replace_custom', 'security' );
 		$custom = $this->check_custom( $from );
 		$msg = '';
@@ -411,7 +411,7 @@ Class Find_WP_Http_Links {
 			if ( 1 != $result ) {
 				$msg = empty( $wpdb->last_error ) ? __( 'Error updating custom posts', 'find-wp-http-links' ) : htmlspecialchars( $wpdb->last_error );
 				break;
-			} // end if error		
+			} // end if error
 		} // end foreach
 		if (empty($msg)) {
 			ob_start();
@@ -421,10 +421,10 @@ Class Find_WP_Http_Links {
 		} else {
 			echo $msg;
 		}
-		
+
 		wp_die();
 	} // end fwhl_replace_custom
-	
+
 	/**
 	 * script for replace http in custom posts
 	 */
@@ -435,11 +435,11 @@ Class Find_WP_Http_Links {
 			function fwhl_replace_custom() {
 				var working = ' <span class="wp-ui-text-primary" style="padding-left:2em">' + jQuery('#fwh_working').text() + ' </span>';
 				jQuery('#fwhl_custom').html(working);
-				
+
 				var from = jQuery('#fwh_http').text();
 				var to = jQuery('#fwh_url').text();
 				var security = '<?php echo $ajax_nonce; ?>';
-				var jqxhr = jQuery.post( ajaxurl, 
+				var jqxhr = jQuery.post( ajaxurl,
 				{ action: 'fwhl_replace_custom', from: from, to: to, security: security } );
 				jqxhr.always(function( response ) {
 				  	if (response == '0') {
@@ -452,7 +452,7 @@ Class Find_WP_Http_Links {
 			</script>
 	<?php
 		} // end fwhl_replace_custom_javascript
-	
+
 	/**
 	 * display widget results.
 	 * @param array $widgets
@@ -467,7 +467,7 @@ Class Find_WP_Http_Links {
 			echo "<p {$css}>" . __( 'No widgets with text found.', 'find-wp-http-links' ) . '</p>';
 			return;
 		}
-	
+
 		$num = sprintf( _n('Checked %s widget', 'Checked %s widgets', $widgets['total'], 'find-wp-http-links' ), $widgets['total'] ) . '.';
 		$num = "<span class='wp-ui-text-primary'>{$num}</span>";
 		if ($widgets['invalid'] > 0) {
@@ -477,12 +477,12 @@ Class Find_WP_Http_Links {
 			} else {
 				$num .= '. <span class="wp-ui-text-primary">' . __( 'See', 'find-wp-http-links' ) . '</span> ';
 			} // end if
-	
+
 			$num .= '<a target="_blank" href="/wp-admin/widgets.php">' . htmlspecialchars( $widgets['title'], ENT_QUOTES ) . '</a>';
 		} else {
 			$num .= ' ' . __( 'No http links on widgets', 'find-wp-http-links' ) . '.	';
 		} // end if invalid widgets
-	
+
 		echo "<p {$css}>{$num}</p>";
 	} // end show_widgets
 
@@ -491,14 +491,14 @@ Class Find_WP_Http_Links {
 	 * @param integer $paged page number
 	 */
 	public function get_content($paged) {
-		
+
 		$site_url = get_bloginfo( 'url' ); // get_option( 'home' );
 		$site_url = untrailingslashit($site_url);
 		$is_https = stristr( $site_url, 'https://' );
 		if ( !$is_https ) {
-			$site_url = self::get_db_home();			
+			$site_url = self::get_db_home();
 		}
-		
+
 		$http = str_ireplace('https://', 'http://', $site_url);
 		$options = $this->check_options( $http );
 		$widgets = $this->check_all_widgets( $http );
@@ -508,7 +508,7 @@ Class Find_WP_Http_Links {
 		$custom = $this->check_custom( $http );
 		$posts = $this->check_posts( $http, $meta );
 		$paged = empty( $_GET['paged'] ) ? 1 : intval( $_GET['paged'] );
-		
+
 		$parts = explode( '&', $_SERVER['REQUEST_URI'] );
 		$url = $parts[0];
 		$links = count( $posts );
@@ -521,7 +521,7 @@ Class Find_WP_Http_Links {
 		if ( 1 > $links_per_page ) {
 			$links_per_page = self::DEFAULT_LINKS_PER_PAGE;
 		} // end if invalid setting
-		
+
 		$pages = intval( ceil( $links / $links_per_page ) );
 		if ($paged < 1 || $paged > $pages) {
 			$paged = 1;
@@ -543,7 +543,7 @@ Class Find_WP_Http_Links {
 		$here = empty( $_GET['page'] ) ? '' : $_GET['page'];
 ?>
 	<div class="wrap">
-<?php	
+<?php
 	echo sprintf( '<h2>%s</h2>', __( 'Find HTTP Links on HTTPS Site', 'find-wp-http-links' ) );
 	$preload = __( 'Reloading. Please wait.', 'find-wp-http-links' );
 	$pworking = __( 'Working', 'find-wp-http-links' );
@@ -563,8 +563,8 @@ Class Find_WP_Http_Links {
 							<table id="fwhl_table" class="widefat">
 	<?php echo $this->getLinksTable( $paged, $meta, $posts, $links_per_page ); ?>
 							</table>
-	
-	<?php if ( $pages > 1 ) : ?>						
+
+	<?php if ( $pages > 1 ) : ?>
 	<div class="tablenav">
 		<div class="tablenav-pages">
 		<form method="get" action="<?php echo $url; ?>">
@@ -573,24 +573,24 @@ Class Find_WP_Http_Links {
 		<span class="paging-input">
 		<input type="hidden" name="page" value="<?php echo $here; ?>">
 		<input class="current-page" type="text" size="<?php echo $digits; ?>"
-		name="paged" value="<?php echo $paged; ?>"></span> / 
+		name="paged" value="<?php echo $paged; ?>"></span> /
 		<span class="total-pages"><?php echo $pages; ?></span>
 			<a class="next-page" href="<?php echo $np; ?>">&rsaquo;</a>
 			<a class="last-page" href="<?php echo $lp; ?>">&raquo;</a>
 			</form>
 		</div>
 	</div>
-	<?php endif; ?>				
+	<?php endif; ?>
 						</div> <!-- .inside -->
 					</div> <!-- .postbox -->
 				</div> <!-- post-body-content -->
-	
+
 				<div id="postbox-container-1" class="postbox-container">
 					<div class="meta-box-sortables">
 						<div class="postbox">
 							<h2 style="border-bottom: 1px solid black; text-align: center;">	<?php _e( 'Analysis', 'find-wp-http-links' ); ?></h2>
 							<div class="inside">
-							<?php 
+							<?php
 								$this->show_options( $options );
 								$this->show_widgets( $widgets );
 								echo '<div id="fwhl_content">';
@@ -601,7 +601,7 @@ Class Find_WP_Http_Links {
 								echo '</div>';
 								echo '<div id="fwhl_other">';
 								$this->show_unpublished_meta( $other );
-								echo '</div>';								
+								echo '</div>';
 								echo '<div id="fwhl_custom">';
 								$this->show_custom($custom);
 								echo '</div>';
@@ -623,7 +623,7 @@ Class Find_WP_Http_Links {
 	</div>
 <?php
 	} // end get_content
-	
+
 	/**
 	 * check content in published posts and pages for http links
 	 * @param string $http http link
@@ -641,7 +641,7 @@ Class Find_WP_Http_Links {
 
 		return $content;
 	} // end check_published_content
-	
+
 	/*
 	 * display meta results
 	 * @param array $posts matching post IDs
@@ -658,7 +658,7 @@ Class Find_WP_Http_Links {
 		}
 		echo "<p class='{$color}'>{$num}</p>";
 	} // end show_published_content
-	
+
 	/**
 	 * replace all published http links in postmeta
 	 * @return string message with results
@@ -666,8 +666,8 @@ Class Find_WP_Http_Links {
 	function fwhl_replace_published_content() {
 		global $wpdb;
 		$from = esc_url_raw($_POST['from']);
-		$to = esc_url_raw($_POST['to']);		
-		check_ajax_referer( 'fwhl_replace_published', 'security' );		
+		$to = esc_url_raw($_POST['to']);
+		check_ajax_referer( 'fwhl_replace_published', 'security' );
 		$all_content = $this->check_published_content($from);
 		$j = count($all_content);
 		$not_fixed = 0;
@@ -680,7 +680,7 @@ Class Find_WP_Http_Links {
 			$content = $wpdb->get_var( $sql );
 			$https = str_ireplace($from, $to, $content);
 			$data = array('post_content' => $https);
-			$where = array('ID' => $all_content[$i]);			
+			$where = array('ID' => $all_content[$i]);
 			$result = $wpdb->update($table, $data, $where, $format, $where_format);
 			if (empty($result) && $wpdb->last_error != '') {
 				$msg = empty($wpdb->last_error) ? "db error: ID {$i}" : $wpdb->last_error;
@@ -688,7 +688,7 @@ Class Find_WP_Http_Links {
 				$not_fixed++;
 			} // end if
 		} // end for
-		
+
 		if (0 != $not_fixed) {
 			$msg = sprintf( _n('Error replacing text on %s published document',
 					'Error replacing text on %s published document',
@@ -700,7 +700,7 @@ Class Find_WP_Http_Links {
 
 		wp_die();
 	} // end fwhl_replace_published_content
-	
+
 	function fwhl_replace_published_content_script() {
 		$ajax_nonce = wp_create_nonce( 'fwhl_replace_published' );
 ?>
@@ -711,7 +711,7 @@ Class Find_WP_Http_Links {
 					var from = jQuery('#fwh_http').text();
 					var to = jQuery('#fwh_url').text();
 					var security = '<?php echo $ajax_nonce; ?>';
-					var jqxhr = jQuery.post( ajaxurl, 
+					var jqxhr = jQuery.post( ajaxurl,
 						{ action: 'fwhl_replace_published_content', from: from, to: to, security: security });
 					jqxhr.always(function( response ) {
 						  	if (response == '0') {
@@ -723,7 +723,7 @@ Class Find_WP_Http_Links {
 						  		jQuery('#fwhl_content').html(response);
 							} else {
 								var lmsg = '<span class="wp-ui-text-highlight" style="font-size:120%;">' + jQuery('#fwh_loading').html() + '</span>';
-								jQuery('#fwhl_caption').html(lmsg);										
+								jQuery('#fwhl_caption').html(lmsg);
 							  	location.reload(true);
 							} // end if display error or reload
 	  					  	return true;
@@ -731,8 +731,8 @@ Class Find_WP_Http_Links {
 				} // end function
 				</script>
 <?php
-			} // end fwhl_replace_published_meta_content	
-			
+			} // end fwhl_replace_published_meta_content
+
 	/**
 	 * check postmeta in published posts for http links
 	 * @param string $http http link
@@ -757,20 +757,20 @@ Class Find_WP_Http_Links {
 		$m = count($all_meta);
 		return array('total' => $m, 'all_meta' => $all_meta);
 	} // end check_published_meta
-	
+
 	/**
 	 * check postmeta that is NOT in published posts for http links
 	 * @param string $http http link
 	 * @return array matching meta IDs
 	 */
-		
+
 	public function check_unpublished_meta( $http ) {
 		global $wpdb;
 		$like = '%' . $wpdb->esc_like( $http ) . '%';
 		$template = "select post_id, meta_key from $wpdb->postmeta
 		where meta_value like %s and post_id not in (select ID from $wpdb->posts where
 		post_status = '%s' and (post_type = '%s' or post_type = '%s'))";
-		$sql = $wpdb->prepare($template, $like, 'publish', 'post', 'page');	
+		$sql = $wpdb->prepare($template, $like, 'publish', 'post', 'page');
 		$metadata = $wpdb->get_results( $sql, ARRAY_A );
 		$m = count( $metadata );
 		$all_meta = array();
@@ -779,7 +779,7 @@ Class Find_WP_Http_Links {
 		} // end for
 		return array('total' => $m, 'all_meta' => $all_meta);
 	} // end check_unpublished_meta
-	
+
 	/**
 	 * show option results
 	 * @param array $options options report
@@ -798,13 +798,13 @@ Class Find_WP_Http_Links {
 		$olink = sprintf ( ' <a href="/wp-admin/options.php" target="_blank">%s</a>', __ ( 'Check options', 'find-wp-http-links' ) );
 		if ( 1000 > $options['invalid'] ) {
 			$ofound = sprintf ( _n( '%s option with http link', '%s options with http links', $options['invalid'], 'find-wp-http-links' ), $options['invalid'] ) . '. ' . $otitle . $olink;
-		} else {			
+		} else {
 			$onum = number_format( floatval( $options['invalid'] ), 0 );
 			$ofound = sprintf('%s %s', $onum, __( 'options with http links', 'find-wp-http-links' ) );
 		} // end if need number format
 		echo "\r\n<p>{$ochecked} {$css}{$ofound}</span></p>\r\n";
 	} // end show_options
-	
+
 	/*
 	 * display meta results
 	 * @param array $meta
@@ -831,13 +831,13 @@ Class Find_WP_Http_Links {
 		if ($other['total'] == 0) {
 			$num = __( 'No http links in other postmeta', 'find-wp-http-links' ) . '.';
 		} else {
-			$num = sprintf( _n('%s other postmeta value with http link', 
+			$num = sprintf( _n('%s other postmeta value with http link',
 					'%s other postmeta values with http links', $other['total'], 'find-wp-http-links' ), $other['total'] ) . '.';
 			$num .= sprintf(' <a class="wp-ui-text-primary" onclick="fwhl_replace_other_meta_js()" href="javascript:;">%s</a></span>', __( 'Fix Unpublished Meta', 'find-wp-http-links' ));
 		}
 		echo "<p class='{$color}'>{$num}</p>";
 	} // end show_unpublished_meta
-	
+
 	/**
 	 * replace text on a single post's content. gets ID, from from _POST.
 	 */
@@ -868,7 +868,7 @@ Class Find_WP_Http_Links {
 			var from = jQuery('#fwh_http').text();
 			var to = jQuery('#fwh_url').text();
 			var security = '<?php echo $ajax_nonce; ?>';
-			var jqxhr = jQuery.post( ajaxurl, { 
+			var jqxhr = jQuery.post( ajaxurl, {
 				action: 'fwhl_replace_text', id: id, from: from, to: to, security: security });
 			jqxhr.always(function( response ) {
 				  if (response == '0') {
@@ -892,7 +892,7 @@ Class Find_WP_Http_Links {
 		</script>
 <?php
 	} // end fwhl_replace_text_javascript
-	
+
 	/**
 	 * replace all published http links in postmeta
 	 * @return string message with results
@@ -905,7 +905,7 @@ Class Find_WP_Http_Links {
 		$sql = "select post_id, meta_key from {$wpdb->prefix}postmeta where meta_value like '%{$from}%' and post_id in (select ID from {$wpdb->prefix}posts where post_status = 'publish' and (post_type = 'post' or post_type = 'page'))";
 		$all = $wpdb->get_results($sql, ARRAY_A);
 		$not_fixed = 0;
-		foreach ($all as $one) {			
+		foreach ($all as $one) {
 			$prev_value = get_post_meta( $one['post_id'], $one['meta_key'], true );
 			$data = @unserialize($prev_value);
 			if (empty($data)) {
@@ -928,7 +928,7 @@ Class Find_WP_Http_Links {
 				$not_fixed++;
 				continue;
 			} // end if
-	
+
 			$meta_value = array();
 			foreach ($data as $k => $v) {
 				if (strstr($v, $from)) {
@@ -948,7 +948,7 @@ Class Find_WP_Http_Links {
 		echo $not_fixed; // ignored. page is reloaded on return.
 		wp_die();
 	} // end fwhl_replace_published_meta
-	
+
 	function fwhl_replace_published_meta_javascript() {
 		$ajax_nonce = wp_create_nonce( 'fwhl_replace_published_meta' );
 ?>
@@ -959,15 +959,15 @@ Class Find_WP_Http_Links {
 				var from = jQuery('#fwh_http').text();
 				var to = jQuery('#fwh_url').text();
 				var security = '<?php echo $ajax_nonce; ?>';
-				var jqxhr = jQuery.post( ajaxurl, 
+				var jqxhr = jQuery.post( ajaxurl,
 					{ action: 'fwhl_replace_published_meta', from: from, to: to, security: security } );
 				jqxhr.always(function( response ) {
 					  	if (response == '0') {
 							response = 'fwhl_replace_published_meta NOT FOUND';
-						} 
+						}
 					  	// jQuery('#fwhl_meta').html(response);
 						var lmsg = '<span class="wp-ui-text-highlight" style="font-size:120%;">' + jQuery('#fwh_loading').html() + '</span>';
-						jQuery('#fwhl_caption').html(lmsg);										
+						jQuery('#fwhl_caption').html(lmsg);
 					  	location.reload(true);
   					  	return true;
 				}); // end always
@@ -981,10 +981,10 @@ Class Find_WP_Http_Links {
 		 * @return string message with results
 		 */
 		function fwhl_replace_unpublished_meta() {
-			global $wpdb;		
+			global $wpdb;
 			$from = esc_url_raw($_POST['from']);
 			$to = esc_url_raw($_POST['to']);
-			check_ajax_referer( 'fwhl_replace_unpublished_meta', 'security' );			
+			check_ajax_referer( 'fwhl_replace_unpublished_meta', 'security' );
 			$all = $this->check_unpublished_meta($from);
 			$not_fixed = 0;
 			foreach ($all['all_meta'] as $one) {
@@ -1005,7 +1005,7 @@ Class Find_WP_Http_Links {
 						continue;
 					} // end if match
 				} // end if not array
-			
+
 				$updated_value = array();
 				foreach ($prev_value as $k => $v) {
 					if (is_array($v)) {
@@ -1018,26 +1018,26 @@ Class Find_WP_Http_Links {
 						$updated_value[$k] = $v;
 						continue;
 					} // end if not string
-			
+
 					$fixed = str_ireplace($from, $to, $v);
 					$updated_value[$k] = $fixed;
 				} // end foreach
-				
+
 				$result = update_post_meta($one['post_id'], $one['meta_key'], $updated_value, $prev_value);
 				if ($result === false) {
 					$not_fixed++;
 					$zq = print_r($updated_value, true);
 					error_log("Cannot update post {$one['post_id']} / {$one['meta_key']} to:\r\n{$zq}");
 				} // end if not fixed
-			} // end foreach	
-			
+			} // end foreach
+
 			$meta = array('total' => $not_fixed);
 			ob_start();
 			$this->show_unpublished_meta($meta);
 			echo ob_get_clean();
 			wp_die(); // $prev_value
 		} // end fwhl_replace_unpublished_meta
-		
+
 		function fwhl_replace_unpublished_meta_javascript() {
 			$ajax_nonce = wp_create_nonce( 'fwhl_replace_unpublished_meta' );
 ?>
@@ -1047,9 +1047,9 @@ function fwhl_replace_other_meta_js(id) {
 	jQuery('#fwhl_other').html(working);
 	var from = jQuery('#fwh_http').text();
 	var security = '<?php echo $ajax_nonce; ?>';
-	var to = jQuery('#fwh_url').text();				
+	var to = jQuery('#fwh_url').text();
 	var jqxhr = jQuery.post( ajaxurl,
-		{ action: 'fwhl_replace_unpublished_meta', from: from, to: to, security: security } ); 
+		{ action: 'fwhl_replace_unpublished_meta', from: from, to: to, security: security } );
 		jqxhr.always(function( response ) {
 			if (response == '0') {
 				response = 'fwhl_replace_unpublished_meta NOT FOUND';
@@ -1061,7 +1061,7 @@ function fwhl_replace_other_meta_js(id) {
 </script>
 <?php
 				} // end fwhl_replace_unpublished_meta_javascript
-		
+
 	/**
 	 * get message with http / https info.
 	 * @param integer $paged
@@ -1097,7 +1097,7 @@ function fwhl_replace_other_meta_js(id) {
 			} // end for
 			if (empty($mlabel)) {
 				$mlabel = sprintf('<span id="s%d">
-				<a class="wp-ui-text-highlight" style="padding-left:2em;" 
+				<a class="wp-ui-text-highlight" style="padding-left:2em;"
 				onclick="fwhl_replace_links(%d)" href="javascript:;">%s</a></span>', $key, $key, __( 'Fix Content', 'find-wp-http-links' ));
 			} // end if
 			$presults .= sprintf( $template, $key, $color, $key, $posts[$key], $mlabel );
@@ -1106,7 +1106,7 @@ function fwhl_replace_other_meta_js(id) {
 
 		return $presults;
 	} // end getLinksTable
-	
+
 	/**
 	 * add support link to plugin description. filters plugin_row_meta.
 	 *
@@ -1121,14 +1121,14 @@ function fwhl_replace_other_meta_js(id) {
 		} // end if adding links
 		return $links;
 	} // end fwhl_plugin_links
-	
+
 	/**
 	 * load translations
 	 */
 	public function init_fwhl_translation() {
 		load_plugin_textdomain( 'find-wp-http-links', false, basename( dirname( __FILE__ ) ) . '/lang' );
 	} // end init_fwhl_translation
-	
+
 	/**
 	 * string representation
 	 * @return string HTML summary
@@ -1140,8 +1140,8 @@ function fwhl_replace_other_meta_js(id) {
 		if (!$is_https) {
 			$site_url = self::get_db_home();
 		}
-		
-		$http = str_ireplace( 'https://', 'http://', $site_url );		
+
+		$http = str_ireplace( 'https://', 'http://', $site_url );
 		$options = $this->check_options( $http );
 		$widgets = $this->check_all_widgets( $http );
 		$content = $this->check_published_content( $http );
@@ -1157,7 +1157,7 @@ function fwhl_replace_other_meta_js(id) {
 		return $t_content . '<br>' . $t_other . '<br>' .
 			$t_options . '<br>' . $t_widgets . '<br>' . $t_posts . '<br>' . $t_meta;
 	} // end __toString
-	
+
 } // end class
 
 new Find_WP_Http_Links();
