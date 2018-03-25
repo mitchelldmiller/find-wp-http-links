@@ -10,6 +10,7 @@
  Domain Path:  /lang
  License:      GPLv3
  License URI:  http://www.gnu.org/licenses/gpl.html
+ GitHub Plugin URI: https://github.com/mitchelldmiller/find-wp-http-links
  */
 
 /**
