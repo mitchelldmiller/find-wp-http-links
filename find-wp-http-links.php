@@ -2,7 +2,7 @@
 /**
  Plugin Name:  Find WordPress HTTP Links
  Description:  Find http links on https site.
- Version:      1.0.2
+ Version:      1.0.3
  Author:       Mitchell D. Miller
  Author URI:   https://wheredidmybraingo.com/about/
  Plugin URI:   https://wheredidmybraingo.com/find-wordpress-http-links/
@@ -134,6 +134,54 @@ Class Find_WP_Http_Links {
 	} // end check_options
 
 	/**
+	 * check custom html widgets for http links.
+	 * @param string $http http version of blog url
+	 * @return array widget info: total, total invalid, first bad title
+	 * @since 1.0.3
+	 */
+	public function check_custom_html( $http ) {
+		global $wpdb;
+		$retval = array('total' => 0, 'title' => '', 'invalid' => 0);
+		// get total first
+		$sql = "select `option_value` from $wpdb->options where `option_name` LIKE 'widget%custom_html%'";
+		$data = $wpdb->get_var( $sql );
+		$widgets = unserialize( $data );
+		$retval['total'] = is_array( $widgets ) ? count( $widgets ) : 0;
+		if ( 0 == $retval['total'] ) {
+			return $retval;
+		} // end if no image widgets
+
+		$like = '%' . $wpdb->esc_like( $http ) . '%';
+		$template = "select `option_value` from $wpdb->options where `option_name` LIKE 'widget%custom_html%' and option_value like %s";
+		$sql = $wpdb->prepare($template, $like);
+		$data = $wpdb->get_var( $sql );
+		$widgets = unserialize( $data );
+		if (empty( $data ) || empty( $widgets )) {
+			return $retval;
+		} // end if
+
+		$keys = array_keys( $widgets );
+		$title = '';
+		foreach ( $keys as $q ) {
+			if ( !is_array( $widgets[$q] ) ) {
+				continue;
+			}
+			foreach( $widgets[$q] as $k => $v ) {
+				if ('title' == $k) {
+					$title = $v;
+				} // end if
+				if ( stristr( $v, $http ) ) {
+					$retval['invalid']++;
+					if ( empty( $retval['title'] ) ) {
+						$retval['title'] = $title;
+					} // end if need title
+				} // end if match
+			} // end foreach
+		} // end foreach
+		return $retval;
+	} // end check_custom_html
+
+	/**
 	 * check video widgets for http links.
 	 * @param string $http http version of blog url
 	 * @return array widget info: total, total invalid, first bad title
@@ -261,7 +309,7 @@ Class Find_WP_Http_Links {
 	} // end check_rss_widgets
 
 	/**
-	 * check rss, image, video widgets
+	 * check rss, image, video, custom html widgets
 	 * @param string $http http version of blog url
 	 * @return array widget info: total, total invalid, first bad title
 	 * @since 1.0.0
@@ -271,6 +319,7 @@ Class Find_WP_Http_Links {
 		$images = $this->check_image_widgets( $http );
 		$videos = $this->check_video_widgets( $http );
 		$rss = $this->check_rss_widgets( $http );
+		$custom = $this->check_custom_html( $http );
 		$title = '';
 		if (!empty($videos['title'])) {
 			$title = $videos['title'];
@@ -278,9 +327,11 @@ Class Find_WP_Http_Links {
 			$title = $images['title'];
 		} elseif (!empty($rss['title'])) {
 			$title = $rss['title'];
+		} elseif (!empty($custom['title'])) {
+			$title = $custom['title'];
 		}
-		$total = $images['total'] + $videos['total'] + $rss['total'];
-		$invalid = $images['invalid'] + $videos['invalid'] + $rss['invalid'];
+		$total = $images['total'] + $videos['total'] + $rss['total'] + $custom['total'];
+		$invalid = $images['invalid'] + $videos['invalid'] + $rss['invalid'] + $custom['invalid'];
 		return array('total' => $total, 'title' => $title, 'invalid' => $invalid);
 	} // end check_special_widgets
 
